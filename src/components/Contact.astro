@@ -1,52 +1,189 @@
 ---
-import { ArrowUpRight, Github, Linkedin, Mail } from 'lucide-astro';
+import { ArrowUpRight, Copy, Github, Linkedin, Send } from 'lucide-astro';
 import CopyEmailButton from './CopyEmailButton.astro';
+import ContactHeadline from './islands/ContactHeadline';
 import { githubUrl, site } from '../data/site';
+
+// Motivos del mensaje: definen el asunto y la ayuda del campo de texto
+const topics = [
+  {
+    id: 'freelance',
+    label: 'Proyecto freelance',
+    placeholder: 'Cuéntame qué quieres construir, para cuándo lo necesitas y si ya tienes diseño…',
+  },
+  {
+    id: 'empleo',
+    label: 'Oferta de empleo',
+    placeholder: 'Rol, empresa, modalidad (remoto / presencial) y cómo es el equipo…',
+  },
+  {
+    id: 'colaboracion',
+    label: 'Colaboración',
+    placeholder: '¿Qué idea tienes en mente? Me encanta sumarme a proyectos interesantes…',
+  },
+  {
+    id: 'saludo',
+    label: 'Solo saludar',
+    placeholder: '¡Hola Gabriel! Vi tu portafolio y…',
+  },
+];
 ---
 
 <section id="contacto" aria-labelledby="contacto-title" class="pt-8 pb-16 sm:pb-24">
   <div class="container-page">
     <div class="card relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16" data-reveal>
-      <div class="bg-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_100%,#000_30%,transparent_100%)]" aria-hidden="true"></div>
-
-      <p class="eyebrow">
-        <span class="text-accent">04</span>
-        <span class="mx-1.5 text-line-strong">/</span>
-        Contacto
-      </p>
-      <h2 id="contacto-title" class="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-balance text-fg sm:text-5xl">
-        ¿Tienes un proyecto o una vacante en mente?
-      </h2>
-      <p class="mt-4 max-w-xl text-base leading-relaxed text-pretty text-muted">
-        Escríbeme con la idea, el problema o la oferta. Respondo desde {site.location} ({site.timezone}).
-      </p>
-
-      <a
-        href={`mailto:${site.email}`}
-        class="arrow-link mt-8 inline-flex max-w-full items-center gap-2 font-mono text-base break-all text-fg transition-colors hover:text-accent sm:text-lg"
+      <div
+        class="bg-dots pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_80%_at_0%_0%,#000_20%,transparent_80%)]"
+        aria-hidden="true"
       >
-        {site.email}
-        <ArrowUpRight size={18} class="shrink-0" aria-hidden="true" />
-      </a>
+      </div>
+      <div class="pointer-events-none absolute -bottom-32 -left-24 -z-10 size-96 rounded-full bg-accent/15 blur-[100px]" aria-hidden="true"></div>
 
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href={`mailto:${site.email}`} class="btn btn-primary">
-          <Mail size={16} aria-hidden="true" />
-          Escribir correo
-        </a>
-        <CopyEmailButton />
-        <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-          <Github size={16} aria-hidden="true" />
-          @{site.github}
-        </a>
-        {
-          site.linkedin && (
-            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-              <Linkedin size={16} aria-hidden="true" />
-              LinkedIn
+      <div class="flex items-center gap-4 font-mono text-xs tracking-[0.14em] text-subtle uppercase">
+        <span>Contacto</span>
+        <span class="h-px flex-1 bg-line-strong" aria-hidden="true"></span>
+        <span aria-hidden="true">§ 04</span>
+      </div>
+
+      <div class="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
+        <!-- Columna izquierda: titular interactivo -->
+        <div class="flex flex-col">
+          <h2
+            id="contacto-title"
+            aria-label="Hablemos de tu proyecto" class="font-serif text-5xl leading-[1.02] font-normal tracking-[-0.03em] text-fg sm:text-6xl xl:text-7xl"
+          >
+            <ContactHeadline
+              client:visible
+              label="Hablemos de"
+              words={['tu proyecto', 'tu vacante', 'una idea', 'un café']}
+            />
+          </h2>
+
+          <p class="mt-8 max-w-md font-serif text-2xl leading-snug text-balance text-fg italic sm:text-3xl">
+            ¿Tienes un proyecto o una vacante en mente?
+          </p>
+          <p class="mt-4 max-w-md text-base leading-relaxed text-pretty text-muted">
+            Arma tu mensaje aquí al lado y se abrirá listo en tu correo. Respondo desde {site.location} (<time
+              data-clock
+              class="font-mono text-sm tabular-nums">{site.timezone}</time
+            >).
+          </p>
+
+          <a
+            href={`mailto:${site.email}`}
+            class="arrow-link mt-8 inline-flex max-w-full items-center gap-2 self-start border-b border-dashed border-line-strong pb-1 font-mono text-base break-all text-fg transition-colors hover:border-accent hover:text-accent"
+          >
+            {site.email}
+            <ArrowUpRight size={18} class="shrink-0" aria-hidden="true" />
+          </a>
+
+          <div class="mt-6 flex flex-wrap gap-3">
+            <CopyEmailButton />
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+              <Github size={16} aria-hidden="true" />
+              @{site.github}
             </a>
-          )
-        }
+            {
+              site.linkedin && (
+                <a href={site.linkedin} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                  <Linkedin size={16} aria-hidden="true" />
+                  LinkedIn
+                </a>
+              )
+            }
+          </div>
+        </div>
+
+        <!-- Columna derecha: compositor de mensaje -->
+        <form
+          data-composer
+          data-email={site.email}
+          action={`mailto:${site.email}`}
+          method="post"
+          enctype="text/plain"
+          class="flex flex-col overflow-hidden rounded-md border border-line-strong bg-bg/60 shadow-[6px_6px_0_0_var(--shadow-hard)] backdrop-blur"
+          aria-labelledby="composer-title"
+        >
+          <div class="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+            <p id="composer-title" class="font-serif text-lg text-fg italic">Nuevo mensaje</p>
+            <span class="flex gap-1.5" aria-hidden="true">
+              <span class="size-2.5 rounded-full bg-line-strong"></span>
+              <span class="size-2.5 rounded-full bg-line-strong"></span>
+              <span class="size-2.5 rounded-full bg-accent"></span>
+            </span>
+          </div>
+
+          <div class="grid gap-5 p-4 sm:p-5">
+            <p class="truncate font-mono text-xs text-subtle">
+              <span class="text-muted">Para:</span>{' '}
+              {site.email}
+            </p>
+
+            <fieldset>
+              <legend class="mb-2.5 text-sm text-muted">¿De qué se trata?</legend>
+              <div class="flex flex-wrap gap-2">
+                {
+                  topics.map((topic, index) => (
+                    <label class="cursor-pointer">
+                      <input
+                        type="radio"
+                        name="topic"
+                        value={topic.label}
+                        data-placeholder={topic.placeholder}
+                        checked={index === 0}
+                        class="peer sr-only"
+                      />
+                      <span class="inline-flex h-8 items-center rounded-sm border border-line-strong px-3 text-[13px] text-muted transition-all peer-checked:-translate-y-0.5 peer-checked:border-accent peer-checked:bg-accent peer-checked:text-accent-fg peer-checked:shadow-[2px_2px_0_0_var(--fg)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent hover:border-fg hover:text-fg">
+                        {topic.label}
+                      </span>
+                    </label>
+                  ))
+                }
+              </div>
+            </fieldset>
+
+            <label class="grid gap-1.5">
+              <span class="text-sm text-muted">Tu nombre</span>
+              <input
+                type="text"
+                name="name"
+                autocomplete="name"
+                placeholder="Ej.: Ana Rodríguez"
+                class="h-10 rounded-sm border border-line-strong bg-surface px-3 text-[15px] text-fg transition-colors placeholder:text-subtle focus:border-accent focus:outline-none"
+              />
+            </label>
+
+            <label class="grid gap-1.5">
+              <span class="flex items-baseline justify-between gap-2 text-sm text-muted">
+                Mensaje
+                <span data-composer-count class="font-mono text-[11px] text-subtle">0 / 1000</span>
+              </span>
+              <textarea
+                name="message"
+                rows="4"
+                maxlength="1000"
+                placeholder={topics[0]?.placeholder}
+                class="resize-none rounded-sm border border-line-strong bg-surface px-3 py-2.5 text-[15px] leading-relaxed text-fg transition-colors placeholder:text-subtle focus:border-accent focus:outline-none"
+              ></textarea>
+            </label>
+
+            <p class="truncate rounded-sm border border-dashed border-line-strong px-3 py-2 font-mono text-[11px] text-subtle">
+              <span class="text-muted">Asunto:</span>{' '}
+              <span data-composer-subject class="text-fg">{topics[0]?.label}</span>
+            </p>
+          </div>
+
+          <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-line px-4 py-3 sm:px-5">
+            <button type="submit" class="btn btn-primary group flex-1">
+              <Send size={15} class="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+              Abrir en mi correo
+            </button>
+            <button type="button" data-composer-copy class="btn btn-secondary">
+              <Copy size={15} aria-hidden="true" />
+              Copiar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

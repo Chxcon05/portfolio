@@ -1,15 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <style>
-    rect { fill: #09090b; stroke: #2c2c33; }
-    text { fill: #ededef; }
-    circle { fill: #3ee59a; }
+    rect { fill: #5cd48e; }
+    text { fill: #04140a; }
     @media (prefers-color-scheme: light) {
-      rect { fill: #ffffff; stroke: #d4d4d8; }
-      text { fill: #0a0a0b; }
-      circle { fill: #0b8f58; }
+      rect { fill: #1f7a45; }
+      text { fill: #ffffff; }
     }
   </style>
-  <rect x="2" y="2" width="60" height="60" rx="14" stroke-width="2" />
-  <text x="29" y="41" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="26" font-weight="700" text-anchor="middle" letter-spacing="-1">gc</text>
-  <circle cx="48" cy="38" r="3.5" />
+  <rect x="4" y="4" width="56" height="56" rx="6" />
+  <text x="31" y="44" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-style="italic" font-weight="500" text-anchor="middle" letter-spacing="-1">gc</text>
 </svg>

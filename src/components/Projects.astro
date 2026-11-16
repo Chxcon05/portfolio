@@ -44,7 +44,7 @@ const pad = (value: number): string => String(value).padStart(2, '0');
             type="button"
             data-filter={filter.id}
             aria-pressed={filter.id === 'all' ? 'true' : 'false'}
-            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3.5 text-sm text-muted transition-colors hover:border-line-strong hover:text-fg aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-bg"
+            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-line bg-surface px-3.5 text-sm text-muted transition-colors hover:border-line-strong hover:text-fg aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-accent-fg"
           >
             {filter.label}
             <span class="font-mono text-[11px] opacity-60">{pad(filter.count)}</span>

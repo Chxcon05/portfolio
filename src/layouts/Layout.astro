@@ -1,6 +1,8 @@
 ---
 import '@fontsource-variable/geist';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/fraunces/opsz.css';
+import '@fontsource-variable/fraunces/opsz-italic.css';
 import '../styles/global.css';
 import { site } from '../data/site';
 import { withBase } from '../lib/url';
@@ -8,14 +10,16 @@ import { withBase } from '../lib/url';
 interface Props {
   title?: string;
   description?: string;
+  /** Fuerza un tema (p. ej. la página /show siempre en oscuro) */
+  forceTheme?: 'dark' | 'light';
 }
 
-const { title = site.title, description = site.description } = Astro.props;
+const { title = site.title, description = site.description, forceTheme } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 ---
 
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme={forceTheme ?? 'dark'} data-force-theme={forceTheme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,8 +32,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 
     <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
 
-    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#13100d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f3ede2" media="(prefers-color-scheme: light)" />
 
     <!-- Open Graph / redes -->
     <meta property="og:type" content="website" />
@@ -45,6 +49,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
         var root = document.documentElement;
         root.classList.add('js');
         var theme = 'dark';
+        if (root.dataset.forceTheme) {
+          root.setAttribute('data-theme', root.dataset.forceTheme);
+          return;
+        }
         try {
           var stored = localStorage.getItem('theme');
           if (stored === 'light' || stored === 'dark') theme = stored;
@@ -60,6 +68,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     >
       Saltar al contenido
     </a>
+    <!-- Barra de progreso de lectura -->
+    <div
+      data-scroll-progress
+      class="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px] origin-left scale-x-0 bg-accent"
+      aria-hidden="true"
+    >
+    </div>
     <slot />
 
     <script>

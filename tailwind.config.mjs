@@ -24,9 +24,26 @@ export default {
         subtle: 'var(--subtle)',
         accent: 'var(--accent)',
         'accent-fg': 'var(--accent-fg)',
+        'accent-2': 'var(--accent-2)',
+        'accent-2-fg': 'var(--accent-2-fg)',
+        // Alias de los tokens de shadcn/ui hacia la paleta del sitio
+        foreground: 'var(--fg)',
+        background: 'var(--surface)',
+        'muted-foreground': 'var(--muted)',
+        input: 'var(--line-strong)',
+        ring: 'var(--accent)',
+        popover: 'var(--surface)',
+        'popover-foreground': 'var(--fg)',
+        primary: 'var(--accent)',
+        'primary-foreground': 'var(--accent-fg)',
+        secondary: 'var(--elevated)',
+        'secondary-foreground': 'var(--fg)',
+        'accent-foreground': 'var(--accent-fg)',
+        destructive: '#e5484d',
       },
       fontFamily: {
         sans: ['"Geist Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['"Fraunces Variable"', 'ui-serif', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono Variable"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       maxWidth: {
@@ -43,10 +60,16 @@ export default {
         ping: {
           '75%, 100%': { transform: 'scale(2.2)', opacity: '0' },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
         ping: 'ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite',
+        marquee: 'marquee 38s linear infinite',
+        'spin-slow': 'spin 22s linear infinite',
       },
     },
   },

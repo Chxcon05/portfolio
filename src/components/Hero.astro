@@ -1,49 +1,122 @@
 ---
-import { ArrowDown, Briefcase, Code2, LayoutGrid, MapPin } from 'lucide-astro';
+import { ArrowDown, ArrowDownRight } from 'lucide-astro';
 import CopyEmailButton from './CopyEmailButton.astro';
+import HeroName from './islands/HeroName';
+import CountUp from './reactbits/CountUp';
 import { site } from '../data/site';
 import { projects } from '../data/projects';
 
 const facts = [
-  { icon: MapPin, label: 'Ubicación', value: `${site.location} · ${site.timezone}` },
-  { icon: Briefcase, label: 'Actualmente', value: `Front-end en ${site.company}` },
-  { icon: Code2, label: 'Enfoque', value: 'TypeScript · React · Astro' },
-  { icon: LayoutGrid, label: 'Portafolio', value: `${projects.length} proyectos en GitHub` },
+  { label: 'Hora local', value: `${site.location} · ${site.timezone}`, clock: true },
+  { label: 'Actualmente', value: `Front-end en ${site.company}` },
+  { label: 'Enfoque', value: 'TypeScript · React · Astro' },
+  { label: 'Portafolio', value: `${projects.length} proyectos en GitHub`, count: projects.length },
 ];
+
+const rotatingWords = ['claras', 'rápidas', 'sólidas', 'cuidadas'];
+
+const sealText = `${site.availability} ✦ ${site.location} ✦ `.toUpperCase();
+const year = new Date().getFullYear();
 ---
 
-<section id="inicio" aria-labelledby="hero-title" class="relative isolate pt-32 pb-16 sm:pt-40 sm:pb-24">
-  <div class="bg-grid pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px]" aria-hidden="true"></div>
+<section id="inicio" aria-labelledby="hero-title" class="relative isolate overflow-hidden pt-32 pb-12 sm:pt-40 sm:pb-16">
+  <div
+    class="bg-dots pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_80%_70%_at_70%_20%,#000_10%,transparent_75%)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute -top-40 right-[-10%] -z-10 size-[520px] rounded-full bg-accent/15 blur-[120px]"
+    aria-hidden="true"
+  >
+  </div>
 
-  <div class="container-page">
-    <div class="max-w-4xl">
-      <p
-        class="animate-fade-up inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pr-3 pl-2.5 font-mono text-xs text-muted"
+  <div class="container-page relative">
+    <!-- Globo 3D (three.js, se carga solo en pantallas grandes) + sello giratorio -->
+    <div class="absolute -top-14 -right-16 hidden size-[440px] lg:block xl:-right-8 xl:size-[520px]">
+      <div
+        class="absolute inset-[12%] rounded-full bg-accent/10 blur-3xl"
+        aria-hidden="true"
       >
-        <span class="relative flex size-2" aria-hidden="true">
-          <span class="absolute inline-flex size-full rounded-full bg-accent opacity-60 motion-safe:animate-ping"></span>
-          <span class="relative inline-flex size-2 rounded-full bg-accent"></span>
+      </div>
+      <div
+        data-globe
+        class="absolute inset-0 opacity-0 transition-opacity duration-1000 data-[ready=true]:opacity-100"
+        title="Arrastra para girar"
+      >
+      </div>
+      <p
+        class="pointer-events-none absolute bottom-[6%] left-[22%] font-mono text-[10px] tracking-[0.14em] text-subtle uppercase"
+        aria-hidden="true"
+      >
+        ↻ arrastra para girar
+      </p>
+    </div>
+
+    <!-- Sello giratorio -->
+    <a
+      href="#contacto"
+      data-magnetic
+      class="group absolute top-[300px] -right-2 hidden size-28 transition-[translate] duration-300 ease-out lg:block xl:top-[340px] xl:right-2 xl:size-32"
+      aria-label="Ir a contacto"
+    >
+      <svg viewBox="0 0 160 160" class="motion-safe:animate-spin-slow size-full text-fg" aria-hidden="true">
+        <defs>
+          <path id="seal-path" d="M80,80 m-62,0 a62,62 0 1,1 124,0 a62,62 0 1,1 -124,0" />
+        </defs>
+        <text class="fill-current font-mono text-[11px] tracking-[0.18em]">
+          <textPath href="#seal-path" textLength="386">{sealText}</textPath>
+        </text>
+      </svg>
+      <span
+        class="absolute inset-0 m-auto grid size-16 place-items-center rounded-full bg-accent text-accent-fg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-45deg]"
+        aria-hidden="true"
+      >
+        <ArrowDownRight size={26} />
+      </span>
+    </a>
+
+    <div class="pointer-events-none relative max-w-4xl lg:max-w-[calc(100%-14rem)] xl:max-w-[calc(100%-16rem)] [&_a,&_button,&_p,&_h1]:pointer-events-auto">
+      <p class="animate-fade-up flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs text-muted">
+        <span class="inline-flex items-center gap-2 rounded-sm border border-line-strong bg-surface px-2 py-1">
+          <span class="relative flex size-2" aria-hidden="true">
+            <span class="absolute inline-flex size-full rounded-full bg-accent opacity-60 motion-safe:animate-ping"></span>
+            <span class="relative inline-flex size-2 rounded-full bg-accent"></span>
+          </span>
+          {site.availability}
         </span>
-        {site.availability}
+        <span class="text-subtle">( Portafolio — {year} )</span>
       </p>
 
       <h1
         id="hero-title"
-        class="animate-fade-up mt-6 text-[2.6rem] leading-[1.02] font-semibold tracking-tightest text-balance text-fg [animation-delay:80ms] sm:text-6xl lg:text-7xl"
+        class="animate-fade-up mt-7 font-serif text-[2.75rem] leading-[1.02] font-normal tracking-[-0.03em] text-balance text-fg [animation-delay:80ms] sm:text-6xl lg:text-[5.25rem]"
       >
-        Interfaces claras para software que la gente usa{' '}
-        <span class="text-subtle">todos los días.</span>
+        Interfaces <em class="scribble font-medium text-accent"
+          ><span class="sr-only">{rotatingWords[0]}</span><span class="word-rotator" aria-hidden="true" data-word-rotator
+            >{rotatingWords.map((word, index) => <span class:list={[index === 0 && 'is-active']}>{word}</span>)}</span
+          ></em
+        > para software que la gente usa{' '}
+        <span class="text-subtle italic">todos los días.</span>
       </h1>
 
       <p
-        class="animate-fade-up mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted [animation-delay:160ms]"
+        class="animate-fade-up mt-7 max-w-2xl text-lg leading-relaxed text-pretty text-muted [animation-delay:160ms]"
       >
-        Soy <strong class="font-medium text-fg">{site.name}</strong>, {site.role.toLowerCase()} en {site.company}, {
+        Soy <HeroName
+          client:visible
+          name={site.name}
+          role={site.role}
+          company={site.company}
+          location={`${site.location} · ${site.timezone}`}
+          github={site.github}
+          projects={projects.length}
+        />, {site.role.toLowerCase()} en {site.company}, {
           site.location
         }. Construyo con TypeScript, React y Astro, y cuando hace falta también la API y la base de datos detrás.
       </p>
 
-      <div class="animate-fade-up mt-8 flex flex-wrap items-center gap-3 [animation-delay:240ms]">
+      <div class="animate-fade-up mt-9 flex flex-wrap items-center gap-3 [animation-delay:240ms]">
         <a href="#proyectos" class="group btn btn-primary">
           Ver proyectos
           <ArrowDown size={16} class="transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden="true" />
@@ -52,15 +125,38 @@ const facts = [
       </div>
     </div>
 
-    <dl class="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:mt-20 lg:grid-cols-4">
+    <!-- Ficha técnica -->
+    <dl class="mt-16 grid grid-cols-2 border-y border-dashed border-line-strong sm:mt-20 lg:grid-cols-4">
       {
-        facts.map(({ icon: Icon, label, value }, index) => (
-          <div class="bg-surface p-4 sm:p-5" data-reveal style={`--reveal-delay:${index * 70}ms`}>
-            <dt class="flex items-center gap-2 font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">
-              <Icon size={13} aria-hidden="true" />
+        facts.map(({ label, value, clock, count }, index) => (
+          <div
+            class:list={[
+              'py-4 pr-4 sm:py-5',
+              index % 2 === 1 && 'border-l border-dashed border-line-strong pl-4',
+              index === 2 && 'border-t border-dashed border-line-strong lg:border-t-0 lg:border-l lg:pl-4',
+              index === 3 && 'border-t border-dashed border-line-strong lg:border-t-0',
+            ]}
+            data-reveal
+            style={`--reveal-delay:${index * 70}ms`}
+          >
+            <dt class="flex items-baseline gap-2 font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">
+              <span class="text-accent">0{index + 1}</span>
               {label}
             </dt>
-            <dd class="mt-2 text-sm font-medium text-fg sm:text-[15px]">{value}</dd>
+            <dd class="mt-2 text-sm font-medium text-fg sm:text-[15px]">
+              {count !== undefined ? (
+                <span>
+                  <CountUp client:visible to={count} from={0} duration={1.6} className="font-mono tabular-nums" /> proyectos en
+                  GitHub
+                </span>
+              ) : clock ? (
+                <span>
+                  {site.location} · <time data-clock class="font-mono tabular-nums">{site.timezone}</time>
+                </span>
+              ) : (
+                value
+              )}
+            </dd>
           </div>
         ))
       }

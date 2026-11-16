@@ -1,36 +1,47 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 @config '../../tailwind.config.mjs';
 
 /* ------------------------------------------------------------------
-   Tokens de color. Oscuro por defecto; claro vía [data-theme="light"].
+   Tokens de color. Oscuro por defecto ("tinta"); claro vía
+   [data-theme="light"] ("papel"). Paleta cálida con dos acentos:
+   verde jade (principal) y mostaza (detalles).
    ------------------------------------------------------------------ */
 :root,
 [data-theme='dark'] {
   color-scheme: dark;
-  --bg: #09090b;
-  --surface: #0e0e11;
-  --elevated: #151518;
-  --line: #1e1e23;
-  --line-strong: #2c2c33;
-  --fg: #ededef;
-  --muted: #a1a1aa;
-  --subtle: #6b6b75;
-  --accent: #3ee59a;
-  --accent-fg: #03140c;
+  --bg: #13100d;
+  --surface: #1a1612;
+  --elevated: #231e19;
+  --line: #2f2822;
+  --line-strong: #463c32;
+  --fg: #f4ede1;
+  --muted: #b8ad9d;
+  --subtle: #8e8374;
+  --accent: #5cd48e;
+  --accent-fg: #04140a;
+  --accent-2: #f4c95d;
+  --accent-2-fg: #1b1406;
+  --shadow-hard: var(--accent);
+  --grain-opacity: 0.06;
 }
 
 [data-theme='light'] {
   color-scheme: light;
-  --bg: #fafafa;
-  --surface: #ffffff;
-  --elevated: #f4f4f5;
-  --line: #e7e7ea;
-  --line-strong: #d4d4d8;
-  --fg: #0a0a0b;
-  --muted: #52525b;
-  --subtle: #8b8b94;
-  --accent: #0b8f58;
+  --bg: #f3ede2;
+  --surface: #faf6ef;
+  --elevated: #ebe3d5;
+  --line: #ddd2c1;
+  --line-strong: #c3b5a0;
+  --fg: #1b1713;
+  --muted: #5a5046;
+  --subtle: #73685a;
+  --accent: #1f7a45;
   --accent-fg: #ffffff;
+  --accent-2: #a16207;
+  --accent-2-fg: #ffffff;
+  --shadow-hard: var(--fg);
+  --grain-opacity: 0.09;
 }
 
 @layer base {
@@ -50,15 +61,30 @@
     font-feature-settings: 'ss01', 'cv11';
   }
 
+  /* Textura de grano sutil sobre todo el sitio (no intercepta clics) */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .font-serif {
+    font-optical-sizing: auto;
+  }
+
   ::selection {
-    background: color-mix(in oklab, var(--accent) 30%, transparent);
-    color: var(--fg);
+    background: var(--accent);
+    color: var(--accent-fg);
   }
 
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 
   section[id] {
@@ -72,57 +98,101 @@
     @apply mx-auto w-full max-w-page px-4 sm:px-6 lg:px-8;
   }
 
-  /* Tarjeta base: borde de 1px, superficie sutil */
+  /* Tarjeta base: esquinas casi rectas, borde de 1px */
   .card {
-    @apply rounded-2xl border border-line bg-surface;
+    @apply rounded-md border border-line bg-surface;
     transition:
       border-color 0.25s ease,
       background-color 0.25s ease,
-      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* Hover: se "levanta" y deja una sombra dura desplazada */
   .card-hover:hover {
     @apply border-line-strong;
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 0 var(--shadow-hard);
   }
 
   /* Etiqueta técnica en monoespaciada */
   .tag {
-    @apply inline-flex items-center rounded-md border border-line bg-elevated px-2 py-0.5 font-mono text-[11px] leading-5 text-muted;
+    @apply inline-flex items-center rounded-sm border border-line bg-elevated px-2 py-0.5 font-mono text-[11px] leading-5 text-muted;
   }
 
   .eyebrow {
     @apply font-mono text-xs uppercase tracking-[0.14em] text-subtle;
   }
 
+  /* Número de sección en contorno */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.25px var(--accent);
+  }
+
   .btn {
-    @apply inline-flex h-10 items-center justify-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap;
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium whitespace-nowrap;
     transition:
       background-color 0.2s ease,
       border-color 0.2s ease,
       color 0.2s ease,
+      box-shadow 0.2s ease,
       transform 0.2s ease;
   }
 
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 3px 3px 0 0 var(--fg);
+  }
+
   .btn:active {
-    transform: scale(0.97);
+    transform: translate(0, 0);
+    box-shadow: 0 0 0 0 var(--fg);
   }
 
   /* Usar junto a .btn: class="btn btn-primary" */
   .btn-primary {
-    @apply bg-fg text-bg hover:opacity-90;
+    @apply border border-accent bg-accent text-accent-fg;
   }
 
   .btn-secondary {
-    @apply border border-line-strong bg-surface text-fg hover:bg-elevated;
+    @apply border border-line-strong bg-surface text-fg hover:border-fg;
   }
 
-  /* Patrón de cuadrícula de fondo (hero) */
+  /* Patrón de cuadrícula (mockups de proyectos) */
   .bg-grid {
     background-image:
       linear-gradient(to right, var(--line) 1px, transparent 1px),
       linear-gradient(to bottom, var(--line) 1px, transparent 1px);
     background-size: 56px 56px;
     mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  /* Patrón de puntos (hero y contacto) */
+  .bg-dots {
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+
+  /* Subrayado a mano alzada bajo una palabra */
+  .scribble {
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .scribble::after {
+    content: '';
+    position: absolute;
+    left: -0.04em;
+    right: -0.04em;
+    bottom: -0.06em;
+    height: 0.2em;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 40 2, 80 2, 110 6 S 170 11, 198 4' fill='none' stroke='%23f4c95d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+  }
+
+  [data-theme='light'] .scribble::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 40 2, 80 2, 110 6 S 170 11, 198 4' fill='none' stroke='%23a16207' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   /* Enlace con flecha que se desplaza al pasar el cursor */
@@ -136,6 +206,21 @@
 }
 
 /* ------------------------------------------------------------------
+   Movimiento: sin animaciones decorativas si el usuario lo pide.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-spin-slow {
+    animation: none;
+  }
+
+  .card-hover:hover,
+  .btn:hover {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------
    Aparición al hacer scroll. Solo se oculta si hay JS (clase .js en
    <html>) y el usuario no pidió reducir movimiento.
    ------------------------------------------------------------------ */
@@ -145,7 +230,9 @@
     transform: translateY(14px);
     transition:
       opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.25s ease,
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
@@ -153,9 +240,186 @@
     opacity: 1;
     transform: none;
   }
+
+  /* Tarjetas que también usan data-reveal: hover inmediato y con desplazamiento */
+  .js [data-reveal].is-visible.card-hover:hover {
+    transform: translate(-3px, -3px);
+    transition-delay: 0ms;
+    transition-duration: 0.3s;
+  }
 }
 
 /* Proyectos ocultos por el filtro */
 [data-project][hidden] {
   display: none;
+}
+
+/* ==================================================================
+   Interacciones
+   ================================================================== */
+
+/* Foco de luz que sigue al cursor dentro de una tarjeta */
+[data-spotlight] {
+  position: relative;
+}
+
+[data-spotlight]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--accent) 14%, transparent),
+    transparent 60%
+  );
+  transition: opacity 0.3s ease;
+}
+
+[data-spotlight]:hover::before {
+  opacity: 1;
+}
+
+/* Palabra rotativa del hero: todas apiladas para que el ancho no salte */
+.word-rotator {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+
+.word-rotator > span {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.word-rotator > span:not(.is-active) {
+  opacity: 0;
+  transform: translateY(0.45em);
+}
+
+.word-rotator > span.is-leaving {
+  opacity: 0;
+  transform: translateY(-0.45em);
+}
+
+/* La cinta del stack se detiene al pasar el cursor */
+.ticker:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Cambio de tema con revelado circular (View Transitions) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Paleta de comandos */
+dialog[data-palette] {
+  margin: 12vh auto auto;
+  width: min(36rem, calc(100% - 2rem));
+  max-height: min(32rem, 76vh);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 8px 8px 0 0 var(--shadow-hard);
+}
+
+dialog[data-palette]::backdrop {
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+dialog[data-palette][open] {
+  animation: palette-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+[data-cmd-item][aria-selected='true'] {
+  background: var(--elevated);
+  color: var(--fg);
+}
+
+[data-cmd-item][aria-selected='true'] [data-cmd-enter] {
+  opacity: 1;
+}
+
+/* Aviso flotante (toast) */
+[data-toast] {
+  transition:
+    opacity 0.3s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-toast]:not(.is-shown) {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog[data-palette][open] {
+    animation: none;
+  }
+}
+
+/* ==================================================================
+   3D
+   ================================================================== */
+
+/* Inclinación 3D del mockup/captura al mover el cursor sobre la tarjeta */
+.tilt-3d {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-origin: 50% 100%;
+}
+
+[data-tilt]:not(:hover) .tilt-3d {
+  transition-duration: 0.6s;
+}
+
+/* Reflejo de luz sobre el área de la imagen */
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 0%),
+    color-mix(in oklab, var(--fg) 14%, transparent),
+    transparent 55%
+  );
+  transition: opacity 0.4s ease;
+}
+
+[data-tilt]:hover .tilt-glare {
+  opacity: 1;
+}
+
+/* Etiquetas de la esfera 3D: el JS fija transform/opacity */
+[data-tag-sphere] span {
+  transform: translate(-50%, -50%);
+  transition: color 0.2s ease;
+}
+
+/* Barra de progreso de "Mi proceso" */
+@keyframes process-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }

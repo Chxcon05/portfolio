@@ -1,30 +1,99 @@
 ---
-import { Accessibility, Braces, PenTool, TestTube } from 'lucide-astro';
 import SectionHeader from './SectionHeader.astro';
+import AboutTerminal from './islands/AboutTerminal';
+import ProcessTabs, { type ProcessStep } from './islands/ProcessTabs';
+import PrinciplesDeck, { type Principle } from './islands/PrinciplesDeck';
+import FaqAccordion, { type Faq } from './islands/FaqAccordion';
 import { site } from '../data/site';
 
-const principles = [
+const principles: Principle[] = [
   {
-    icon: PenTool,
+    icon: 'pen',
     title: 'Del diseño al componente',
     text: 'Parto de Figma y lo traduzco en componentes reutilizables, cuidando espaciados, estados vacíos y errores.',
   },
   {
-    icon: Braces,
+    icon: 'braces',
     title: 'Tipos de punta a punta',
     text: 'TypeScript estricto y esquemas Zod compartidos entre interfaz y API: si el contrato cambia, el compilador avisa.',
   },
   {
-    icon: TestTube,
+    icon: 'test',
     title: 'Probado antes de entregar',
     text: 'Pruebas de API con Vitest y Supertest, y flujos completos con Playwright cuando el proyecto lo amerita.',
   },
   {
-    icon: Accessibility,
+    icon: 'a11y',
     title: 'Accesible y liviano',
     text: 'HTML semántico, componentes accesibles sobre Radix y la menor cantidad de JavaScript posible en el cliente.',
   },
 ];
+
+const steps: ProcessStep[] = [
+  {
+    id: 'entender',
+    title: 'Entender',
+    text: 'Antes de escribir código entiendo el problema: quién usa la herramienta, qué proceso reemplaza (a veces vive en hojas de cálculo) y qué datos necesita.',
+    tools: ['Conversaciones', 'Flujos', 'Requisitos'],
+  },
+  {
+    id: 'disenar',
+    title: 'Diseñar',
+    text: 'Parto de Figma y lo traduzco en componentes reutilizables, pensando desde el inicio en estados vacíos, de carga y de error.',
+    tools: ['Figma', 'Tailwind CSS', 'Radix UI'],
+  },
+  {
+    id: 'construir',
+    title: 'Construir',
+    text: 'Interfaz con TypeScript estricto y, cuando el proyecto lo necesita, la API y el modelo de datos detrás, con esquemas Zod compartidos.',
+    tools: ['TypeScript', 'React', 'Astro', 'Node.js', 'PostgreSQL'],
+  },
+  {
+    id: 'probar',
+    title: 'Probar',
+    text: 'Pruebas de API con Vitest y Supertest, y flujos completos con Playwright cuando el proyecto lo amerita.',
+    tools: ['Vitest', 'Supertest', 'Playwright'],
+  },
+  {
+    id: 'entregar',
+    title: 'Entregar',
+    text: 'HTML semántico, componentes accesibles y la menor cantidad de JavaScript posible en el cliente; despliegue con Git y Vercel o GitHub Pages.',
+    tools: ['Git & GitHub', 'Vercel', 'Docker'],
+  },
+];
+
+const faqs: Faq[] = [
+  {
+    question: '¿Desde dónde trabajas?',
+    answer: `Desde ${site.location}, en la zona horaria ${site.timezone}. Hoy trabajo como ${site.role.toLowerCase()} en ${site.company}.`,
+  },
+  {
+    question: '¿Con qué tecnologías trabajas?',
+    answer:
+      'Sobre todo TypeScript, React y Astro con Tailwind CSS. También Next.js, React Native con Expo, y bases de datos como PostgreSQL, MongoDB y Oracle.',
+  },
+  {
+    question: '¿Haces solo front-end?',
+    answer:
+      'Mi fuerte es el front-end, pero cuando el proyecto lo necesita construyo la API y el modelo de datos con Node.js, Express y PostgreSQL para entender el producto de punta a punta.',
+  },
+  {
+    question: '¿Estás disponible para proyectos?',
+    answer: `${site.availability}. Escríbeme desde la sección de contacto con la idea, el problema o la oferta.`,
+  },
+];
+
+const terminalCode = `const gabriel = {
+  rol: "${site.role}",
+  empresa: "${site.company}",
+  base: "${site.location} (${site.timezone})",
+  frontend: ["TypeScript", "React", "Astro"],
+  backend: ["Node.js", "Express", "PostgreSQL"],
+  pruebas: ["Vitest", "Playwright"],
+  disponible: true,
+};
+
+export default gabriel;`;
 
 const facts = [
   { label: 'Base', value: `${site.location} (${site.timezone})` },
@@ -37,9 +106,10 @@ const facts = [
   <div class="container-page">
     <SectionHeader id="sobre-mi-title" index="03" eyebrow="Sobre mí" title="Cómo trabajo" />
 
+    <!-- Fila 1: texto + terminal -->
     <div class="grid gap-4 lg:grid-cols-5">
       <div class="card flex flex-col p-6 sm:p-8 lg:col-span-2" data-reveal>
-        <div class="space-y-4 text-[15px] leading-relaxed text-pretty text-muted">
+        <div class="space-y-4 text-[15px] leading-relaxed text-pretty text-muted first-letter:float-left first-letter:mt-1 first-letter:mr-2 first-letter:font-serif first-letter:text-6xl first-letter:leading-[0.8] first-letter:text-accent first-letter:italic">
           {site.about.map((paragraph) => <p>{paragraph}</p>)}
         </div>
 
@@ -55,19 +125,43 @@ const facts = [
         </dl>
       </div>
 
-      <ul class="grid gap-4 sm:grid-cols-2 lg:col-span-3">
-        {
-          principles.map(({ icon: Icon, title, text }, index) => (
-            <li class="card card-hover p-6" data-reveal style={`--reveal-delay:${index * 70}ms`}>
-              <span class="grid size-9 place-items-center rounded-lg border border-line bg-elevated text-accent">
-                <Icon size={17} aria-hidden="true" />
-              </span>
-              <h3 class="mt-5 text-base font-semibold tracking-tight text-fg">{title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-pretty text-muted">{text}</p>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="card p-3 sm:p-4 lg:col-span-3" data-reveal style="--reveal-delay:80ms">
+        <AboutTerminal client:visible code={terminalCode} />
+      </div>
+    </div>
+
+    <!-- Fila 2: proceso por pasos -->
+    <div class="card mt-4 p-6 sm:p-8" data-reveal>
+      <div class="mb-6 flex items-baseline justify-between gap-4">
+        <h3 class="font-serif text-2xl font-normal text-fg sm:text-3xl">Mi proceso</h3>
+        <span class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">5 pasos</span>
+      </div>
+      <ProcessTabs client:visible steps={steps} />
+    </div>
+
+    <!-- Fila 3: principios (mazo 3D) + preguntas frecuentes -->
+    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+      <div class="card flex flex-col overflow-hidden p-6 sm:p-8" data-reveal>
+        <div class="flex items-baseline justify-between gap-4">
+          <h3 class="font-serif text-2xl font-normal text-fg sm:text-3xl">Principios</h3>
+          <span class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">arrastra las tarjetas</span>
+        </div>
+        <!-- Lista accesible; el mazo 3D es la versión visual -->
+        <ul class="sr-only">
+          {principles.map((principle) => <li>{principle.title}: {principle.text}</li>)}
+        </ul>
+        <div class="mt-auto" aria-hidden="true">
+          <PrinciplesDeck client:visible principles={principles} />
+        </div>
+      </div>
+
+      <div class="card p-6 sm:p-8" data-reveal style="--reveal-delay:80ms">
+        <div class="mb-2 flex items-baseline justify-between gap-4">
+          <h3 class="font-serif text-2xl font-normal text-fg sm:text-3xl">Preguntas frecuentes</h3>
+          <span class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">{String(faqs.length).padStart(2, '0')}</span>
+        </div>
+        <FaqAccordion client:visible items={faqs} />
+      </div>
     </div>
   </div>
 </section>

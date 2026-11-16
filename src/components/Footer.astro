@@ -1,6 +1,7 @@
 ---
 import { ArrowUp, Github, Linkedin, Mail } from 'lucide-astro';
 import { navLinks, site, socialLinks } from '../data/site';
+import FooterName from './islands/FooterName';
 
 const icons = { github: Github, linkedin: Linkedin, mail: Mail };
 const year = new Date().getFullYear();
@@ -11,7 +12,7 @@ const year = new Date().getFullYear();
     <div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
       <div class="max-w-sm">
         <a href="#inicio" class="inline-flex items-center gap-2.5 rounded-lg">
-          <span class="grid size-8 place-items-center rounded-lg border border-line-strong bg-elevated font-mono text-[13px] font-semibold text-fg">
+          <span class="grid size-8 place-items-center rounded-sm bg-accent pb-0.5 font-serif text-lg leading-none font-medium text-accent-fg italic">
             {site.shortName}
           </span>
           <span class="text-sm font-medium text-fg">{site.name}</span>
@@ -63,9 +64,23 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <div class="mt-10 flex flex-col-reverse gap-4 border-t border-line pt-6 font-mono text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
+    <!-- Firma: las letras reaccionan a la cercanía del cursor (React Bits · VariableProximity) -->
+    <div
+      class="mt-14 overflow-hidden font-serif text-[14vw] leading-[0.9] tracking-[-0.05em] whitespace-nowrap select-none lg:text-[9.5rem]"
+      aria-hidden="true"
+    >
+      <FooterName client:visible name={`${site.name}.`} />
+    </div>
+    <p class="mt-2 font-mono text-[11px] tracking-[0.12em] text-subtle uppercase" aria-hidden="true">
+      ↖ pasa el cursor por mi nombre
+    </p>
+
+    <div class="mt-6 flex flex-col-reverse gap-4 border-t border-dashed border-line-strong pt-6 font-mono text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
       <p>
-        © <span data-year>{year}</span> {site.name} · Hecho con Astro y Tailwind CSS
+        © <span data-year>{year}</span> {site.name} · Hecho con Astro, React y Tailwind CSS{' '}
+        <span class="hidden md:inline">
+          · Pulsa <button type="button" data-palette-open class="rounded-sm border border-line-strong px-1 text-fg transition-colors hover:border-accent hover:text-accent">Ctrl K</button> para navegar
+        </span>
       </p>
       <a href="#inicio" class="group inline-flex items-center gap-1.5 transition-colors hover:text-fg">
         Volver arriba

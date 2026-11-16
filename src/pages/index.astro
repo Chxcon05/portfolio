@@ -1,25 +1,456 @@
 ---
+/**
+ * Página principal: narrativa guiada por el scroll (estilo página de producto
+ * de Apple), siempre en modo oscuro, con piezas 3D de React Bits y componentes
+ * de shadcn/ui. La versión anterior del portafolio vive en /clasico.
+ */
+import { ArrowDown, ArrowUpRight } from 'lucide-astro';
 import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/Navbar.astro';
-import Hero from '../components/Hero.astro';
-import Projects from '../components/Projects.astro';
-import Stack from '../components/Stack.astro';
-import About from '../components/About.astro';
-import Contact from '../components/Contact.astro';
-import Footer from '../components/Footer.astro';
+import ProjectMockup from '../components/ProjectMockup.astro';
+import ShowParticles from '../components/islands/ShowParticles';
+import ShowVelocity from '../components/islands/ShowVelocity';
+import ShowCTA from '../components/islands/ShowCTA';
+import CountUp from '../components/reactbits/CountUp';
+import { categories, projects } from '../data/projects';
+import { stackGroups } from '../data/stack';
+import { githubUrl, site } from '../data/site';
+import { withBase } from '../lib/url';
+
+const featured = projects.find((project) => project.featured) ?? projects[0]!;
+const gallery = projects.filter((project) => project !== featured);
+
+const manifesto =
+  'Tomo un diseño de Figma o un proceso que hoy vive en hojas de cálculo y lo convierto en una interfaz clara, rápida y fácil de mantener.';
+const manifestoWords = manifesto.split(' ');
+
+const stackNames = stackGroups.flatMap((group) => group.items.map((item) => item.name));
+const half = Math.ceil(stackNames.length / 2);
+const velocityRows = [stackNames.slice(0, half).join('  ·  '), stackNames.slice(half).join('  ·  ')];
+
+const principles = [
+  {
+    title: 'Del diseño al componente',
+    text: 'Parto de Figma y lo traduzco en componentes reutilizables, cuidando espaciados, estados vacíos y errores.',
+  },
+  {
+    title: 'Tipos de punta a punta',
+    text: 'TypeScript estricto y esquemas Zod compartidos entre interfaz y API: si el contrato cambia, el compilador avisa.',
+  },
+  {
+    title: 'Probado antes de entregar',
+    text: 'Pruebas de API con Vitest y Supertest, y flujos completos con Playwright cuando el proyecto lo amerita.',
+  },
+  {
+    title: 'Accesible y liviano',
+    text: 'HTML semántico, componentes accesibles sobre Radix y la menor cantidad de JavaScript posible en el cliente.',
+  },
+];
+
+const pad = (value: number): string => String(value).padStart(2, '0');
 ---
 
-<Layout>
-  <Navbar />
-  <main id="contenido">
-    <Hero />
-    <Projects />
-    <Stack />
-    <About />
-    <Contact />
-  </main>
-  <Footer />
+<Layout forceTheme="dark">
+  <!-- Barra superior mínima -->
+  <header class="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-4 py-4 sm:px-8">
+    <a href="#show-title" class="group flex items-center gap-2.5 rounded-full" aria-label={`${site.name}, ir al inicio`}>
+      <span
+        class="grid size-9 place-items-center rounded-sm bg-accent pb-0.5 font-serif text-lg leading-none font-medium text-accent-fg italic transition-transform duration-300 group-hover:-rotate-6"
+      >
+        {site.shortName}
+      </span>
+      <span class="hidden text-sm font-medium tracking-tight text-fg sm:inline">{site.name}</span>
+    </a>
+    <a
+      href={withBase('clasico')}
+      class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-bg/60 px-3 py-1.5 font-mono text-[11px] tracking-[0.12em] text-muted uppercase backdrop-blur transition-colors hover:border-accent hover:text-fg"
+    >
+      Versión clásica <ArrowUpRight size={13} aria-hidden="true" />
+    </a>
+  </header>
 
-  <!-- Anuncia "Copiado" a lectores de pantalla -->
+  <main id="contenido" class="show overflow-x-clip">
+    <!-- 1 · HERO: partículas 3D + nombre que se aleja con el scroll -->
+    <section class="relative h-[220vh]" data-show-hero aria-labelledby="show-title">
+      <div class="sticky top-0 flex h-dvh items-center justify-center overflow-hidden">
+        <div class="absolute inset-0" data-hero-particles aria-hidden="true">
+          <ShowParticles client:load />
+        </div>
+        <div
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,var(--bg)_78%)]"
+          aria-hidden="true"
+        >
+        </div>
+
+        <div class="pointer-events-none relative px-4 text-center">
+          <p class="font-mono text-xs tracking-[0.3em] text-subtle uppercase" data-hero-eyebrow>
+            Portafolio · {new Date().getFullYear()} · {site.location}
+          </p>
+          <h1
+            id="show-title"
+            data-hero-title
+            class="mt-6 font-serif text-[19vw] leading-[0.82] font-light tracking-[-0.06em] text-fg sm:text-[15vw] lg:text-[13rem]"
+          >
+            Gabriel<br /><em class="font-normal text-accent">Chacón.</em>
+          </h1>
+          <p
+            data-hero-sub
+            class="mx-auto mt-10 max-w-xl font-serif text-2xl leading-snug text-balance text-fg italic sm:text-4xl"
+          >
+            Diseño. Código. <span class="text-accent">Detalle.</span>
+          </p>
+        </div>
+
+        <p
+          class="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-subtle uppercase"
+          data-hero-hint
+        >
+          Desliza
+          <ArrowDown size={14} class="motion-safe:animate-bounce" aria-hidden="true" />
+        </p>
+      </div>
+    </section>
+
+    <!-- 2 · MANIFIESTO: cada palabra se ilumina al bajar -->
+    <section class="relative h-[200vh]" data-manifesto aria-label="Manifiesto">
+      <div class="sticky top-0 flex h-dvh items-center">
+        <div class="container-page">
+          <p class="mb-8 font-mono text-xs tracking-[0.3em] text-accent uppercase">01 — Lo que hago</p>
+          <p class="max-w-5xl font-serif text-4xl leading-[1.12] font-normal tracking-[-0.025em] text-fg sm:text-6xl lg:text-7xl">
+            {manifestoWords.map((word) => <span class="mword">{word} </span>)}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · REVELACIÓN 3D del proyecto destacado -->
+    <section class="relative h-[320vh]" data-reveal-3d aria-labelledby="featured-title">
+      <div class="sticky top-0 flex h-dvh flex-col items-center justify-center overflow-hidden px-4">
+        <div class="text-center" data-featured-head>
+          <p class="font-mono text-xs tracking-[0.3em] text-accent uppercase">02 — Proyecto destacado</p>
+          <h2 id="featured-title" class="mt-4 font-serif text-4xl font-normal tracking-[-0.03em] text-fg sm:text-6xl">
+            {featured.title}
+          </h2>
+        </div>
+
+        <div class="relative mt-8 w-[min(100%,56rem,calc((100dvh-20rem)*1.6))] [perspective:1400px]">
+          <!-- Resplandor -->
+          <div class="absolute inset-x-[10%] -bottom-10 h-32 rounded-full bg-accent/25 blur-[90px]" aria-hidden="true"></div>
+          <!-- "Pantalla" -->
+          <div
+            data-device
+            class="relative aspect-[16/10] w-full origin-bottom overflow-hidden rounded-xl border border-line-strong bg-surface shadow-[0_60px_120px_-40px_rgb(0_0_0/0.9)] [transform-style:preserve-3d]"
+          >
+            <ProjectMockup variant={featured.mockup} slug={featured.slug} title={featured.title} />
+            <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.09]" aria-hidden="true"></div>
+          </div>
+          <!-- Base del portátil -->
+          <div class="mx-auto h-3 w-[108%] -translate-x-[3.7%] rounded-b-2xl border border-t-0 border-line-strong bg-elevated" data-device-base aria-hidden="true"></div>
+
+          <!-- Etiquetas flotantes con los puntos clave -->
+          {
+            (featured.highlights ?? []).map((highlight, index) => (
+              <div
+                data-callout
+                class:list={[
+                  'absolute hidden max-w-56 rounded-md border border-line-strong bg-bg/80 px-4 py-3 text-sm leading-snug text-fg shadow-[4px_4px_0_0_var(--accent)] backdrop-blur md:block',
+                  index === 0 && '-top-6 -left-10',
+                  index === 1 && 'top-1/3 -right-16',
+                  index === 2 && '-bottom-4 left-[12%]',
+                ]}
+              >
+                <span class="mb-1 block font-mono text-[10px] text-accent">{pad(index + 1)}</span>
+                {highlight}
+              </div>
+            ))
+          }
+        </div>
+
+        <ul class="mt-12 flex max-w-3xl flex-wrap justify-center gap-1.5" data-featured-stack aria-label="Tecnologías">
+          {featured.stack.map((tech) => <li class="tag">{tech}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4 · GALERÍA HORIZONTAL de proyectos -->
+    <section class="relative" data-hscroll aria-labelledby="gallery-title">
+      <div class="flex h-dvh flex-col justify-center overflow-hidden" data-hscroll-pin>
+        <div class="container-page mb-10 flex items-end justify-between gap-6">
+          <div>
+            <p class="font-mono text-xs tracking-[0.3em] text-accent uppercase">03 — Más trabajo</p>
+            <h2 id="gallery-title" class="mt-4 font-serif text-4xl font-normal tracking-[-0.03em] text-fg sm:text-6xl">
+              Proyectos en movimiento
+            </h2>
+          </div>
+          <p class="hidden font-mono text-xs text-subtle sm:block">{pad(gallery.length)} proyectos →</p>
+        </div>
+
+        <div class="flex w-max gap-6 pr-[10vw] pl-4 sm:pl-[max(2rem,calc((100vw-72rem)/2+2rem))]" data-hscroll-track>
+          {
+            gallery.map((project, index) => (
+              <a
+                href={project.repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tilt-card
+                class="group relative block w-[78vw] shrink-0 overflow-hidden rounded-xl border border-line-strong bg-surface transition-[border-color] duration-300 [transform-style:preserve-3d] hover:border-accent sm:w-[440px]"
+              >
+                <div class="relative aspect-[16/10] border-b border-line">
+                  <ProjectMockup variant={project.mockup} slug={project.slug} title={project.title} />
+                </div>
+                <div class="p-6">
+                  <div class="flex justify-between font-mono text-[11px] tracking-[0.1em] text-subtle uppercase">
+                    <span>
+                      <span class="text-accent">N.º {pad(index + 2)}</span> · {categories[project.category]}
+                    </span>
+                    <span>{project.year}</span>
+                  </div>
+                  <h3 class="mt-3 font-serif text-3xl font-normal tracking-[-0.01em] text-fg">{project.title}</h3>
+                  <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{project.description}</p>
+                  <p class="mt-4 font-mono text-xs text-fg transition-colors group-hover:text-accent">Ver código ↗</p>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · GLOBO 3D + cifras -->
+    <section class="relative py-24 sm:py-32" aria-labelledby="globe-title">
+      <div class="container-page grid items-center gap-12 lg:grid-cols-2">
+        <div data-fade-up>
+          <p class="font-mono text-xs tracking-[0.3em] text-accent uppercase">04 — Desde aquí</p>
+          <h2 id="globe-title" class="mt-4 font-serif text-5xl leading-[1.02] font-normal tracking-[-0.03em] text-fg sm:text-7xl">
+            Desde {site.location},<br /><em class="text-muted">para cualquier zona horaria.</em>
+          </h2>
+          <dl class="mt-12 grid grid-cols-3 gap-6 border-t border-line pt-8">
+            <div>
+              <dt class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">Proyectos</dt>
+              <dd class="mt-2 font-serif text-5xl text-fg sm:text-6xl">
+                <CountUp client:visible to={projects.length} from={0} duration={1.8} />
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">Tecnologías</dt>
+              <dd class="mt-2 font-serif text-5xl text-fg sm:text-6xl">
+                <CountUp client:visible to={stackNames.length} from={0} duration={2} />
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">Zona horaria</dt>
+              <dd class="mt-2 font-serif text-5xl text-accent sm:text-6xl">{site.timezone.replace('GMT', '')}</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="relative mx-auto aspect-square w-full max-w-[560px]" data-fade-up>
+          <div class="absolute inset-[14%] rounded-full bg-accent/15 blur-3xl" aria-hidden="true"></div>
+          <div data-show-globe class="absolute inset-0 opacity-0 transition-opacity duration-1000 data-[ready=true]:opacity-100"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · STACK en bandas que reaccionan a la velocidad del scroll -->
+    <section class="relative border-y border-line py-16 sm:py-24" aria-label="Stack">
+      <p class="container-page mb-10 font-mono text-xs tracking-[0.3em] text-accent uppercase">05 — Herramientas</p>
+      <ul class="sr-only">{stackNames.map((name) => <li>{name}</li>)}</ul>
+      <div aria-hidden="true">
+        <ShowVelocity client:visible rows={velocityRows} />
+      </div>
+    </section>
+
+    <!-- 7 · PRINCIPIOS: tarjetas que se apilan -->
+    <section class="relative py-24 sm:py-32" aria-labelledby="principles-title">
+      <div class="container-page">
+        <p class="font-mono text-xs tracking-[0.3em] text-accent uppercase">06 — Cómo trabajo</p>
+        <h2 id="principles-title" class="mt-4 mb-16 font-serif text-5xl font-normal tracking-[-0.03em] text-fg sm:text-7xl">
+          Cuatro principios.
+        </h2>
+        <div class="mx-auto max-w-4xl" data-stack-cards>
+          {
+            principles.map((principle, index) => (
+              <article
+                data-stack-card
+                class="sticky mb-[12vh] flex min-h-[46vh] flex-col justify-between overflow-hidden rounded-2xl border border-line-strong bg-surface p-8 shadow-[0_-20px_60px_-30px_rgb(0_0_0/0.9)] sm:p-12"
+                style={`top: calc(14vh + ${index * 28}px)`}
+              >
+                <div class="flex items-start justify-between gap-6">
+                  <span class="text-outline font-serif text-8xl leading-none font-light italic sm:text-9xl">{pad(index + 1)}</span>
+                  <span class="font-mono text-xs text-subtle">
+                    {pad(index + 1)} / {pad(principles.length)}
+                  </span>
+                </div>
+                <div>
+                  <h3 class="font-serif text-4xl font-normal tracking-[-0.02em] text-fg sm:text-5xl">{principle.title}</h3>
+                  <p class="mt-4 max-w-2xl text-lg leading-relaxed text-pretty text-muted">{principle.text}</p>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · CIERRE -->
+    <section class="relative overflow-hidden py-32 sm:py-48" aria-label="Contacto">
+      <div class="absolute top-1/2 left-1/2 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[140px]" aria-hidden="true"></div>
+      <div class="container-page relative" data-fade-up>
+        <ShowCTA
+          client:visible
+          email={site.email}
+          githubUrl={githubUrl}
+          github={site.github}
+          availability={site.availability}
+          homeUrl={withBase('clasico')}
+        />
+      </div>
+    </section>
+  </main>
+
   <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
 </Layout>
+
+<style>
+  .mword {
+    opacity: 0.14;
+    transition: opacity 0.1s linear;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mword {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const mm = gsap.matchMedia();
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    /* 1 · Hero: el nombre se aleja, aparece el lema y las partículas se expanden */
+    const hero = document.querySelector('[data-show-hero]');
+    if (hero) {
+      gsap
+        .timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.6 } })
+        .to('[data-hero-title]', { scale: 0.55, yPercent: -18, opacity: 0.25, ease: 'none' }, 0)
+        .to('[data-hero-eyebrow], [data-hero-hint]', { opacity: 0, y: -30, ease: 'none' }, 0)
+        .fromTo('[data-hero-sub]', { opacity: 0, y: 60 }, { opacity: 1, y: 0, ease: 'none' }, 0.25)
+        .to('[data-hero-particles]', { scale: 1.35, opacity: 0.55, ease: 'none' }, 0);
+    }
+
+    /* 2 · Manifiesto: palabras que se encienden una a una */
+    const manifesto = document.querySelector('[data-manifesto]');
+    if (manifesto) {
+      gsap.to(manifesto.querySelectorAll('.mword'), {
+        opacity: 1,
+        stagger: 0.08,
+        ease: 'none',
+        scrollTrigger: { trigger: manifesto, start: 'top top', end: 'bottom bottom', scrub: true },
+      });
+    }
+
+    /* 3 · Revelación 3D: la pantalla se endereza y aparecen las etiquetas */
+    const reveal = document.querySelector('[data-reveal-3d]');
+    if (reveal) {
+      gsap
+        .timeline({ scrollTrigger: { trigger: reveal, start: 'top top', end: 'bottom bottom', scrub: 0.8 } })
+        .fromTo(
+          '[data-device]',
+          { rotateX: 62, scale: 0.72, y: 60 },
+          { rotateX: 0, scale: 1, y: 0, ease: 'power2.out', duration: 1 },
+        )
+        .fromTo('[data-device-base]', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.5)
+        .fromTo('[data-featured-head]', { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5 }, 0.2)
+        .fromTo(
+          '[data-callout]',
+          { opacity: 0, y: 30, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, stagger: 0.25, duration: 0.5 },
+          1,
+        )
+        .fromTo('[data-featured-stack] li', { opacity: 0, y: 12 }, { opacity: 1, y: 0, stagger: 0.04, duration: 0.3 }, 1.4)
+        .to({}, { duration: 0.6 });
+    }
+
+    /* 4 · Galería horizontal: el scroll vertical desplaza la fila */
+    const track = document.querySelector<HTMLElement>('[data-hscroll-track]');
+    const pin = document.querySelector<HTMLElement>('[data-hscroll-pin]');
+    if (track && pin) {
+      const distance = (): number => Math.max(0, track.scrollWidth - window.innerWidth);
+      gsap.to(track, {
+        x: () => -distance(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: pin,
+          start: 'top top',
+          end: () => `+=${distance()}`,
+          pin: true,
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+        },
+      });
+    }
+
+    /* 7 · Principios: cada tarjeta se encoge cuando la siguiente la tapa */
+    const cards = gsap.utils.toArray<HTMLElement>('[data-stack-card]');
+    cards.forEach((card, index) => {
+      const next = cards[index + 1];
+      if (!next) return;
+      gsap.to(card, {
+        scale: 0.9,
+        filter: 'brightness(0.4) blur(1px)',
+        ease: 'none',
+        scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 20%', scrub: true },
+      });
+    });
+
+    /* Apariciones simples */
+    gsap.utils.toArray<HTMLElement>('[data-fade-up]').forEach((element) => {
+      gsap.fromTo(
+        element,
+        { opacity: 0, y: 60 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: element, start: 'top 85%' } },
+      );
+    });
+  });
+
+  /* Inclinación 3D de las tarjetas de la galería (solo con cursor) */
+  if (window.matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-tilt-card]').forEach((card) => {
+      card.addEventListener('pointermove', (event) => {
+        const rect = card.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width - 0.5;
+        const py = (event.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(card, { rotateY: px * 12, rotateX: -py * 10, transformPerspective: 900, duration: 0.4, ease: 'power2.out' });
+      });
+      card.addEventListener('pointerleave', () => {
+        gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power3.out' });
+      });
+    });
+  }
+
+  /* 5 · Globo 3D (three.js), se carga al acercarse */
+  const globe = document.querySelector<HTMLElement>('[data-show-globe]');
+  if (globe) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        import('../scripts/globe')
+          .then(({ mountGlobe }) => mountGlobe(globe, reduced))
+          .catch(() => {
+            /* sin WebGL: la sección se ve igual, sin globo */
+          });
+      },
+      { rootMargin: '300px' },
+    );
+    observer.observe(globe);
+  }
+
+  // Recalcular posiciones cuando terminan de cargar fuentes e islas
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+</script>

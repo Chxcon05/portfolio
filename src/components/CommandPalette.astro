@@ -1,0 +1,127 @@
+---
+/**
+ * Paleta de comandos (Ctrl/⌘ + K o "/"): navegar, copiar el correo,
+ * cambiar el tema y abrir los repositorios. La lógica vive en
+ * src/scripts/main.ts (initCommandPalette).
+ */
+import { ArrowRight, Copy, CornerDownLeft, Github, Hash, Mail, Search, Sparkles, SunMoon } from 'lucide-astro';
+import { withBase } from '../lib/url';
+import { githubUrl, navLinks, site } from '../data/site';
+import { projects } from '../data/projects';
+
+type Action = 'nav' | 'copy' | 'theme' | 'link' | 'go';
+
+interface Command {
+  group: string;
+  label: string;
+  hint?: string;
+  action: Action;
+  value?: string;
+  keywords: string;
+  icon: typeof Hash;
+}
+
+const commands: Command[] = [
+  { group: 'Ir a', label: 'Inicio', action: 'nav', value: '#inicio', keywords: 'home arriba', icon: Hash },
+  ...navLinks.map((link) => ({
+    group: 'Ir a',
+    label: link.label,
+    action: 'nav' as const,
+    value: link.href,
+    keywords: link.href.slice(1),
+    icon: Hash,
+  })),
+  { group: 'Acciones', label: 'Ir a la página principal', hint: 'versión 3D', action: 'go', value: withBase(''), keywords: 'inicio principal show 3d animaciones', icon: Sparkles },
+  { group: 'Acciones', label: 'Copiar correo', hint: site.email, action: 'copy', keywords: 'email mail contacto', icon: Copy },
+  { group: 'Acciones', label: 'Escribir correo', action: 'link', value: `mailto:${site.email}`, keywords: 'email mail', icon: Mail },
+  { group: 'Acciones', label: 'Cambiar tema', hint: 'claro / oscuro', action: 'theme', keywords: 'dark light modo', icon: SunMoon },
+  { group: 'Acciones', label: 'Abrir GitHub', hint: `@${site.github}`, action: 'link', value: githubUrl, keywords: 'perfil repos', icon: Github },
+  ...projects.map((project) => ({
+    group: 'Proyectos',
+    label: project.title,
+    hint: project.stack.slice(0, 3).join(' · '),
+    action: 'link' as const,
+    value: project.repo,
+    keywords: `${project.stack.join(' ')} ${project.category} codigo repo`,
+    icon: ArrowRight,
+  })),
+];
+
+const groups = [...new Set(commands.map((command) => command.group))];
+---
+
+<dialog data-palette aria-label="Paleta de comandos">
+  <div class="flex items-center gap-3 border-b border-line px-4">
+    <Search size={17} class="shrink-0 text-subtle" aria-hidden="true" />
+    <input
+      data-cmd-input
+      type="text"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="cmd-list"
+      aria-autocomplete="list"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder="Busca una sección, acción o proyecto…"
+      class="h-14 w-full bg-transparent text-[15px] text-fg placeholder:text-subtle focus:outline-none"
+    />
+    <kbd class="hidden shrink-0 rounded-sm border border-line-strong px-1.5 font-mono text-[10px] leading-5 text-subtle sm:block">ESC</kbd>
+  </div>
+
+  <div class="max-h-[min(24rem,60vh)] overflow-y-auto p-2" data-cmd-scroll>
+    <ul id="cmd-list" role="listbox" aria-label="Resultados">
+      {
+        groups.map((group) => (
+          <li role="presentation" data-cmd-group>
+            <p class="px-2.5 pt-3 pb-1.5 font-mono text-[10px] tracking-[0.14em] text-subtle uppercase" aria-hidden="true">
+              {group}
+            </p>
+            <ul role="presentation">
+              {commands
+                .filter((command) => command.group === group)
+                .map(({ label, hint, action, value, keywords, icon: Icon }) => (
+                  <li
+                    role="option"
+                    aria-selected="false"
+                    data-cmd-item
+                    data-cmd-action={action}
+                    data-cmd-value={value}
+                    data-cmd-search={`${label} ${hint ?? ''} ${keywords}`.toLowerCase()}
+                    class="flex cursor-pointer items-center gap-3 rounded-sm px-2.5 py-2 text-sm text-muted"
+                  >
+                    <span class="grid size-7 shrink-0 place-items-center rounded-sm border border-line bg-elevated text-accent">
+                      <Icon size={14} aria-hidden="true" />
+                    </span>
+                    <span class="min-w-0 flex-1 truncate">
+                      <span class="text-fg">{label}</span>
+                      {hint && <span class="ml-2 font-mono text-[11px] text-subtle">{hint}</span>}
+                    </span>
+                    <CornerDownLeft size={14} data-cmd-enter class="shrink-0 text-subtle opacity-0" aria-hidden="true" />
+                  </li>
+                ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+    <p data-cmd-empty hidden class="px-3 py-8 text-center text-sm text-subtle">Nada coincide con esa búsqueda.</p>
+  </div>
+
+  <div class="flex items-center justify-between gap-3 border-t border-line px-4 py-2.5 font-mono text-[10px] text-subtle">
+    <span class="flex items-center gap-3">
+      <span><kbd class="text-fg">↑↓</kbd> moverse</span>
+      <span><kbd class="text-fg">↵</kbd> abrir</span>
+    </span>
+    <span><kbd class="text-fg">Ctrl K</kbd> abrir / cerrar</span>
+  </div>
+</dialog>
+
+<!-- Aviso visual; el anuncio para lectores de pantalla va por #copy-status -->
+<div
+  data-toast
+  aria-hidden="true"
+  class="fixed bottom-6 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 rounded-md border border-line-strong bg-surface px-4 py-2.5 text-sm text-fg shadow-[4px_4px_0_0_var(--shadow-hard)]"
+>
+  <span class="size-2 rounded-full bg-accent"></span>
+  <span data-toast-text></span>
+</div>

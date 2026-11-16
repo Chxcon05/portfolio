@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
+import react from '@astrojs/react';
+
 /**
  * GitHub Pages:
  * - El workflow (.github/workflows/deploy.yml) inyecta SITE y BASE a partir de
@@ -19,10 +21,14 @@ export default defineConfig({
   base,
   output: 'static',
   trailingSlash: 'ignore',
+
   build: {
     assets: '_assets',
   },
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  integrations: [react()],
 });

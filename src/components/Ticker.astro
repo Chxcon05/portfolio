@@ -1,0 +1,28 @@
+---
+/**
+ * Cinta inclinada con el stack, en desplazamiento continuo.
+ * Es decorativa: la lista real del stack está en la sección #stack.
+ */
+import { stackGroups } from '../data/stack';
+
+const items = stackGroups.flatMap((group) => group.items.map((item) => item.name));
+---
+
+<div class="ticker relative overflow-hidden py-10 sm:py-12" aria-hidden="true">
+  <div class="-mx-8 -rotate-[1.6deg] border-y border-fg/20 bg-accent text-accent-fg">
+    <div class="flex w-max motion-safe:animate-marquee">
+      {
+        [0, 1].map(() => (
+          <ul class="flex shrink-0 items-center">
+            {items.map((name) => (
+              <li class="flex items-center gap-6 px-3 py-3 font-serif text-2xl whitespace-nowrap italic sm:text-3xl">
+                {name}
+                <span class="font-sans text-base not-italic opacity-70">✦</span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</div>

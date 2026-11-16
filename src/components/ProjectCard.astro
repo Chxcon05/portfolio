@@ -16,6 +16,8 @@ const headingId = `project-${project.slug}`;
 
 <article
   data-project
+  data-spotlight
+  data-tilt
   data-category={project.category}
   data-reveal
   aria-labelledby={headingId}
@@ -30,15 +32,16 @@ const headingId = `project-${project.slug}`;
           alt={project.imageAlt ?? `Captura de ${project.title}`}
           loading="lazy"
           decoding="async"
-          class="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+          class="tilt-3d h-full w-full object-cover object-top transition-transform duration-500"
         />
       ) : (
         <ProjectMockup variant={project.mockup} slug={project.slug} title={project.title} />
       )
     }
+    <span class="tilt-glare" aria-hidden="true"></span>
     {
       featured && (
-        <span class="absolute top-3 right-3 rounded-full border border-line-strong bg-bg/80 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-fg uppercase backdrop-blur">
+        <span class="absolute top-3 right-3 rotate-2 rounded-sm bg-accent-2 px-2.5 py-1 font-mono text-[10px] font-semibold tracking-wider text-accent-2-fg uppercase shadow-[2px_2px_0_0_var(--fg)]">
           Destacado
         </span>
       )
@@ -47,11 +50,11 @@ const headingId = `project-${project.slug}`;
 
   <div class="flex flex-1 flex-col p-5 sm:p-6">
     <div class="flex items-center justify-between gap-3 font-mono text-[11px] tracking-[0.1em] text-subtle uppercase">
-      <span>{categories[project.category]}</span>
+      <span class="flex items-center gap-2"><span class="text-accent">N.º {String(index + 1).padStart(2, '0')}</span><span class="text-line-strong">/</span>{categories[project.category]}</span>
       <span>{project.year}</span>
     </div>
 
-    <h3 id={headingId} class="mt-3 text-lg font-semibold tracking-tight text-fg sm:text-xl">{project.title}</h3>
+    <h3 id={headingId} class:list={['mt-3 font-serif leading-tight font-normal tracking-[-0.01em] text-fg', featured ? 'text-2xl sm:text-4xl' : 'text-2xl']}>{project.title}</h3>
     <p class="mt-2 text-sm leading-relaxed text-pretty text-muted">{project.description}</p>
 
     {
@@ -59,7 +62,7 @@ const headingId = `project-${project.slug}`;
         <ul class="mt-4 grid gap-1.5 text-sm text-muted md:grid-cols-3 md:gap-3">
           {project.highlights.map((highlight) => (
             <li class="flex gap-2">
-              <span class="mt-2 size-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+              <span class="mt-[0.45rem] size-1.5 shrink-0 rotate-45 bg-accent-2" aria-hidden="true" />
               <span>{highlight}</span>
             </li>
           ))}
@@ -72,7 +75,7 @@ const headingId = `project-${project.slug}`;
     </ul>
 
     <div class="flex-1 pt-5" aria-hidden="true"></div>
-    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm">
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-dashed border-line-strong pt-4 text-sm">
       <a
         href={project.repo}
         target="_blank"
