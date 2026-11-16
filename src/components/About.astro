@@ -1,0 +1,73 @@
+---
+import { Accessibility, Braces, PenTool, TestTube } from 'lucide-astro';
+import SectionHeader from './SectionHeader.astro';
+import { site } from '../data/site';
+
+const principles = [
+  {
+    icon: PenTool,
+    title: 'Del diseño al componente',
+    text: 'Parto de Figma y lo traduzco en componentes reutilizables, cuidando espaciados, estados vacíos y errores.',
+  },
+  {
+    icon: Braces,
+    title: 'Tipos de punta a punta',
+    text: 'TypeScript estricto y esquemas Zod compartidos entre interfaz y API: si el contrato cambia, el compilador avisa.',
+  },
+  {
+    icon: TestTube,
+    title: 'Probado antes de entregar',
+    text: 'Pruebas de API con Vitest y Supertest, y flujos completos con Playwright cuando el proyecto lo amerita.',
+  },
+  {
+    icon: Accessibility,
+    title: 'Accesible y liviano',
+    text: 'HTML semántico, componentes accesibles sobre Radix y la menor cantidad de JavaScript posible en el cliente.',
+  },
+];
+
+const facts = [
+  { label: 'Base', value: `${site.location} (${site.timezone})` },
+  { label: 'Hoy', value: `Front-end en ${site.company}` },
+  { label: 'Formación', value: 'Estudiante en CTPCDB' },
+];
+---
+
+<section id="sobre-mi" aria-labelledby="sobre-mi-title" class="py-16 sm:py-24">
+  <div class="container-page">
+    <SectionHeader id="sobre-mi-title" index="03" eyebrow="Sobre mí" title="Cómo trabajo" />
+
+    <div class="grid gap-4 lg:grid-cols-5">
+      <div class="card flex flex-col p-6 sm:p-8 lg:col-span-2" data-reveal>
+        <div class="space-y-4 text-[15px] leading-relaxed text-pretty text-muted">
+          {site.about.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <dl class="mt-8 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-line pt-6">
+          {
+            facts.map((fact) => (
+              <div>
+                <dt class="font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">{fact.label}</dt>
+                <dd class="mt-1 text-sm text-fg">{fact.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <ul class="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+        {
+          principles.map(({ icon: Icon, title, text }, index) => (
+            <li class="card card-hover p-6" data-reveal style={`--reveal-delay:${index * 70}ms`}>
+              <span class="grid size-9 place-items-center rounded-lg border border-line bg-elevated text-accent">
+                <Icon size={17} aria-hidden="true" />
+              </span>
+              <h3 class="mt-5 text-base font-semibold tracking-tight text-fg">{title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-pretty text-muted">{text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import SectionHeader from './SectionHeader.astro';
+import { categories, projects, usedCategories } from '../data/projects';
+
+// Destacados primero; el resto conserva el orden del array.
+const sorted = [...projects].sort((a, b) => Number(b.featured === true) - Number(a.featured === true));
+
+const filters = [
+  { id: 'all', label: 'Todos', count: projects.length },
+  ...usedCategories.map((key) => ({
+    id: key,
+    label: categories[key],
+    count: projects.filter((project) => project.category === key).length,
+  })),
+];
+
+const pad = (value: number): string => String(value).padStart(2, '0');
+---
+
+<section id="proyectos" aria-labelledby="proyectos-title" class="py-16 sm:py-24">
+  <div class="container-page">
+    <SectionHeader
+      id="proyectos-title"
+      index="01"
+      eyebrow="Proyectos"
+      title="Trabajo seleccionado"
+      description="Proyectos reales de mi GitHub: aplicaciones web completas, prototipos para negocio y algunos experimentos en Python y Java."
+    >
+      <p class="font-mono text-xs text-subtle" aria-live="polite">
+        <span data-project-count class="text-fg">{pad(projects.length)}</span> proyectos
+      </p>
+    </SectionHeader>
+
+    <div
+      data-filter-group
+      role="group"
+      aria-label="Filtrar proyectos por categoría"
+      class="-mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0"
+    >
+      {
+        filters.map((filter) => (
+          <button
+            type="button"
+            data-filter={filter.id}
+            aria-pressed={filter.id === 'all' ? 'true' : 'false'}
+            class="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3.5 text-sm text-muted transition-colors hover:border-line-strong hover:text-fg aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-bg"
+          >
+            {filter.label}
+            <span class="font-mono text-[11px] opacity-60">{pad(filter.count)}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {sorted.map((project, index) => <ProjectCard project={project} index={index} />)}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import Projects from '../components/Projects.astro';
+import Stack from '../components/Stack.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+  <main id="contenido">
+    <Hero />
+    <Projects />
+    <Stack />
+    <About />
+    <Contact />
+  </main>
+  <Footer />
+
+  <!-- Anuncia "Copiado" a lectores de pantalla -->
+  <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+</Layout>

@@ -1,0 +1,108 @@
+---
+import {
+  Atom,
+  Braces,
+  Code2,
+  Coffee,
+  Container,
+  Cpu,
+  Database,
+  Figma,
+  GitBranch,
+  Globe,
+  Layers,
+  Leaf,
+  Rocket,
+  Server,
+  ShieldCheck,
+  Smartphone,
+  Terminal,
+  TestTube,
+  Wind,
+  Zap,
+} from 'lucide-astro';
+import SectionHeader from './SectionHeader.astro';
+import { stackGroups, type StackIcon } from '../data/stack';
+
+const iconMap = {
+  code: Code2,
+  braces: Braces,
+  atom: Atom,
+  layers: Layers,
+  rocket: Rocket,
+  wind: Wind,
+  smartphone: Smartphone,
+  zap: Zap,
+  server: Server,
+  terminal: Terminal,
+  shield: ShieldCheck,
+  cpu: Cpu,
+  coffee: Coffee,
+  database: Database,
+  leaf: Leaf,
+  container: Container,
+  git: GitBranch,
+  test: TestTube,
+  figma: Figma,
+  globe: Globe,
+} satisfies Record<StackIcon, unknown>;
+
+// Bento: Frontend ancho, Backend al lado, Datos & DevOps en fila completa.
+const layout: Record<string, { card: string; list: string }> = {
+  frontend: { card: 'lg:col-span-2', list: 'sm:grid-cols-2' },
+  backend: { card: '', list: '' },
+  'data-devops': { card: 'lg:col-span-3', list: 'sm:grid-cols-2 lg:grid-cols-4' },
+};
+---
+
+<section id="stack" aria-labelledby="stack-title" class="border-y border-line bg-surface/40 py-16 sm:py-24">
+  <div class="container-page">
+    <SectionHeader
+      id="stack-title"
+      index="02"
+      eyebrow="Stack"
+      title="Herramientas con las que construyo"
+      description="Lo que uso en proyectos reales, agrupado por capa. Sin porcentajes: el código de cada proyecto habla por sí solo."
+    />
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      {
+        stackGroups.map((group, groupIndex) => {
+          const styles = layout[group.id] ?? { card: '', list: '' };
+          return (
+            <div
+              class:list={['card p-5 sm:p-6', styles.card]}
+              data-reveal
+              style={`--reveal-delay:${groupIndex * 80}ms`}
+            >
+              <div class="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="text-base font-semibold tracking-tight text-fg">{group.title}</h3>
+                  <p class="mt-1 text-sm text-muted">{group.description}</p>
+                </div>
+                <span class="font-mono text-[11px] text-subtle">{String(group.items.length).padStart(2, '0')}</span>
+              </div>
+
+              <ul class:list={['grid gap-2', styles.list]}>
+                {group.items.map((item) => {
+                  const Icon = iconMap[item.icon];
+                  return (
+                    <li class="group/item flex items-center gap-3 rounded-xl border border-line bg-bg/40 px-3 py-2.5 transition-colors hover:border-line-strong">
+                      <span class="grid size-8 shrink-0 place-items-center rounded-lg border border-line bg-elevated text-muted transition-colors group-hover/item:text-accent">
+                        <Icon size={16} aria-hidden="true" />
+                      </span>
+                      <span class="min-w-0">
+                        <span class="block truncate text-sm font-medium text-fg">{item.name}</span>
+                        {item.note && <span class="block truncate font-mono text-[11px] text-subtle">{item.note}</span>}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

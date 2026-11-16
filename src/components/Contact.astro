@@ -1,0 +1,53 @@
+---
+import { ArrowUpRight, Github, Linkedin, Mail } from 'lucide-astro';
+import CopyEmailButton from './CopyEmailButton.astro';
+import { githubUrl, site } from '../data/site';
+---
+
+<section id="contacto" aria-labelledby="contacto-title" class="pt-8 pb-16 sm:pb-24">
+  <div class="container-page">
+    <div class="card relative isolate overflow-hidden px-6 py-12 sm:px-12 sm:py-16" data-reveal>
+      <div class="bg-grid pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_100%,#000_30%,transparent_100%)]" aria-hidden="true"></div>
+
+      <p class="eyebrow">
+        <span class="text-accent">04</span>
+        <span class="mx-1.5 text-line-strong">/</span>
+        Contacto
+      </p>
+      <h2 id="contacto-title" class="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-balance text-fg sm:text-5xl">
+        ¿Tienes un proyecto o una vacante en mente?
+      </h2>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-pretty text-muted">
+        Escríbeme con la idea, el problema o la oferta. Respondo desde {site.location} ({site.timezone}).
+      </p>
+
+      <a
+        href={`mailto:${site.email}`}
+        class="arrow-link mt-8 inline-flex max-w-full items-center gap-2 font-mono text-base break-all text-fg transition-colors hover:text-accent sm:text-lg"
+      >
+        {site.email}
+        <ArrowUpRight size={18} class="shrink-0" aria-hidden="true" />
+      </a>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={`mailto:${site.email}`} class="btn btn-primary">
+          <Mail size={16} aria-hidden="true" />
+          Escribir correo
+        </a>
+        <CopyEmailButton />
+        <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+          <Github size={16} aria-hidden="true" />
+          @{site.github}
+        </a>
+        {
+          site.linkedin && (
+            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+              <Linkedin size={16} aria-hidden="true" />
+              LinkedIn
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

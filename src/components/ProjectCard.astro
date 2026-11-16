@@ -1,0 +1,102 @@
+---
+import { ArrowUpRight, Github } from 'lucide-astro';
+import ProjectMockup from './ProjectMockup.astro';
+import { categories, type Project } from '../data/projects';
+import { withBase } from '../lib/url';
+
+interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+const featured = project.featured === true;
+const headingId = `project-${project.slug}`;
+---
+
+<article
+  data-project
+  data-category={project.category}
+  data-reveal
+  aria-labelledby={headingId}
+  style={`--reveal-delay:${(index % 3) * 70}ms`}
+  class:list={['card card-hover group flex flex-col overflow-hidden', featured && 'md:col-span-2']}
+>
+  <div class:list={['relative border-b border-line', featured ? 'aspect-[16/10] md:aspect-[21/9]' : 'aspect-[16/10]']}>
+    {
+      project.image ? (
+        <img
+          src={withBase(project.image)}
+          alt={project.imageAlt ?? `Captura de ${project.title}`}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+      ) : (
+        <ProjectMockup variant={project.mockup} slug={project.slug} title={project.title} />
+      )
+    }
+    {
+      featured && (
+        <span class="absolute top-3 right-3 rounded-full border border-line-strong bg-bg/80 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-fg uppercase backdrop-blur">
+          Destacado
+        </span>
+      )
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col p-5 sm:p-6">
+    <div class="flex items-center justify-between gap-3 font-mono text-[11px] tracking-[0.1em] text-subtle uppercase">
+      <span>{categories[project.category]}</span>
+      <span>{project.year}</span>
+    </div>
+
+    <h3 id={headingId} class="mt-3 text-lg font-semibold tracking-tight text-fg sm:text-xl">{project.title}</h3>
+    <p class="mt-2 text-sm leading-relaxed text-pretty text-muted">{project.description}</p>
+
+    {
+      project.highlights && project.highlights.length > 0 && (
+        <ul class="mt-4 grid gap-1.5 text-sm text-muted md:grid-cols-3 md:gap-3">
+          {project.highlights.map((highlight) => (
+            <li class="flex gap-2">
+              <span class="mt-2 size-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+              <span>{highlight}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <ul class="mt-5 flex flex-wrap gap-1.5" aria-label="Tecnologías">
+      {project.stack.map((tech) => <li class="tag">{tech}</li>)}
+    </ul>
+
+    <div class="flex-1 pt-5" aria-hidden="true"></div>
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm">
+      <a
+        href={project.repo}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="arrow-link inline-flex items-center gap-1.5 font-medium text-fg transition-colors hover:text-accent"
+      >
+        <Github size={15} aria-hidden="true" />
+        Código
+        <span class="sr-only">de {project.title} en GitHub</span>
+      </a>
+      {
+        project.demo && (
+          <a
+            href={project.demo}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="arrow-link inline-flex items-center gap-1 font-medium text-fg transition-colors hover:text-accent"
+          >
+            Live Demo
+            <ArrowUpRight size={15} aria-hidden="true" />
+            <span class="sr-only">de {project.title}</span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</article>

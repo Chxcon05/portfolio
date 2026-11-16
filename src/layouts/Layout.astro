@@ -1,0 +1,69 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = site.title, description = site.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+---
+
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+
+    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+
+    <!-- Open Graph / redes -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Tema: oscuro por defecto; respeta la elección guardada. Se ejecuta antes del primer pintado. -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme = 'dark';
+        try {
+          var stored = localStorage.getItem('theme');
+          if (stored === 'light' || stored === 'dark') theme = stored;
+        } catch (e) {}
+        root.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body class="min-h-dvh overflow-x-hidden">
+    <a
+      href="#contenido"
+      class="sr-only z-[60] rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+    >
+      Saltar al contenido
+    </a>
+    <slot />
+
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

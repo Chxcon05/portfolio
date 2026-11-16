@@ -1,0 +1,36 @@
+---
+import { Check, Copy } from 'lucide-astro';
+import { site } from '../data/site';
+
+interface Props {
+  label?: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+}
+
+const { label = 'Copiar correo', variant = 'secondary', class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  data-copy-email={site.email}
+  title={`Copiar ${site.email}`}
+  class:list={[
+    'group btn',
+    variant === 'primary' ? 'btn-primary' : 'btn-secondary',
+    'data-[copied=true]:border-accent data-[copied=true]:text-accent',
+    className,
+  ]}
+>
+  <span class="relative grid size-4 place-items-center" aria-hidden="true">
+    <Copy
+      size={15}
+      class="absolute transition-all duration-200 group-data-[copied=true]:scale-50 group-data-[copied=true]:opacity-0"
+    />
+    <Check
+      size={16}
+      class="absolute scale-50 opacity-0 transition-all duration-200 group-data-[copied=true]:scale-100 group-data-[copied=true]:opacity-100"
+    />
+  </span>
+  <span data-copy-label>{label}</span>
+</button>

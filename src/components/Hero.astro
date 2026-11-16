@@ -1,0 +1,69 @@
+---
+import { ArrowDown, Briefcase, Code2, LayoutGrid, MapPin } from 'lucide-astro';
+import CopyEmailButton from './CopyEmailButton.astro';
+import { site } from '../data/site';
+import { projects } from '../data/projects';
+
+const facts = [
+  { icon: MapPin, label: 'Ubicación', value: `${site.location} · ${site.timezone}` },
+  { icon: Briefcase, label: 'Actualmente', value: `Front-end en ${site.company}` },
+  { icon: Code2, label: 'Enfoque', value: 'TypeScript · React · Astro' },
+  { icon: LayoutGrid, label: 'Portafolio', value: `${projects.length} proyectos en GitHub` },
+];
+---
+
+<section id="inicio" aria-labelledby="hero-title" class="relative isolate pt-32 pb-16 sm:pt-40 sm:pb-24">
+  <div class="bg-grid pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px]" aria-hidden="true"></div>
+
+  <div class="container-page">
+    <div class="max-w-4xl">
+      <p
+        class="animate-fade-up inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pr-3 pl-2.5 font-mono text-xs text-muted"
+      >
+        <span class="relative flex size-2" aria-hidden="true">
+          <span class="absolute inline-flex size-full rounded-full bg-accent opacity-60 motion-safe:animate-ping"></span>
+          <span class="relative inline-flex size-2 rounded-full bg-accent"></span>
+        </span>
+        {site.availability}
+      </p>
+
+      <h1
+        id="hero-title"
+        class="animate-fade-up mt-6 text-[2.6rem] leading-[1.02] font-semibold tracking-tightest text-balance text-fg [animation-delay:80ms] sm:text-6xl lg:text-7xl"
+      >
+        Interfaces claras para software que la gente usa{' '}
+        <span class="text-subtle">todos los días.</span>
+      </h1>
+
+      <p
+        class="animate-fade-up mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted [animation-delay:160ms]"
+      >
+        Soy <strong class="font-medium text-fg">{site.name}</strong>, {site.role.toLowerCase()} en {site.company}, {
+          site.location
+        }. Construyo con TypeScript, React y Astro, y cuando hace falta también la API y la base de datos detrás.
+      </p>
+
+      <div class="animate-fade-up mt-8 flex flex-wrap items-center gap-3 [animation-delay:240ms]">
+        <a href="#proyectos" class="group btn btn-primary">
+          Ver proyectos
+          <ArrowDown size={16} class="transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden="true" />
+        </a>
+        <CopyEmailButton />
+      </div>
+    </div>
+
+    <dl class="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:mt-20 lg:grid-cols-4">
+      {
+        facts.map(({ icon: Icon, label, value }, index) => (
+          <div class="bg-surface p-4 sm:p-5" data-reveal style={`--reveal-delay:${index * 70}ms`}>
+            <dt class="flex items-center gap-2 font-mono text-[11px] tracking-[0.12em] text-subtle uppercase">
+              <Icon size={13} aria-hidden="true" />
+              {label}
+            </dt>
+            <dd class="mt-2 text-sm font-medium text-fg sm:text-[15px]">{value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
